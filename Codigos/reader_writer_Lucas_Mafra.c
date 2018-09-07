@@ -1,3 +1,11 @@
+/*************************************************/
+//   Curso: Programação Concorrente - 2/2018     //
+//   Professor: Eduardo Alchieri                 //
+//   Aluno: Lucas Mafra Chagas                   //
+//   Matrícula: 12/0126443                       //
+/*************************************************/
+
+
 #include "stdio.h"
 #include "stdlib.h"
 #include "pthread.h"
