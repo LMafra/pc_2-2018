@@ -20,11 +20,11 @@ Datas:
 ## Estudos Dirigidos
 
 | Atividade | Título | Código | Data de Entrega |
-| ------------- |:-------------:| -----:|
+|-----------|--------|--------|-----------------|
 | 1 | Problema dos leitures e escritores (usando locks) | reader_writer.c | 06/09/2018 |
-| 2 | Criação e sinalização entre processos | XXXXXX | XX/XX/2018 |
-| 3 | Criando threads | XXXXXX | XX/XX/2018 |
-| 4 | Problema do aeroporto (usando locks) | XXXXXX | XX/XX/2018 | 
+| 2 | Problema do aeroporto (usando locks) | monkey_problem.c | 11/09/2018 |
+| 3 | Criação e sinalização entre processos | XXXXXX | XX/XX/2018 |
+| 4 | Criando threads | XXXXXX | XX/XX/2018 |
 | 5 | Problema dos macacos (usando locks) | XXXXXX | XX/XX/2018 |
 | 6 | Problema dos produtores e consumidores (usando variáveis condição) | XXXXXX | XX/XX/2018 |
 | 7 | Problema dos canibais (usando variáveis condição) | XXXXXX | XX/XX/2018 |
