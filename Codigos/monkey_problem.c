@@ -15,15 +15,16 @@
 
 #define TRUE 1
 
-#define MONKEY_A 5
-#define MONKEY_B 5
+#define MONKEY_A 10
+#define MONKEY_B 10
 
 pthread_mutex_t turn;
-pthread_mutex_t db;
-pthread_mutex_t mountain_b__mountain_a;
-pthread_mutex_t mountain_a__mountain_b;
+pthread_mutex_t entry;
+pthread_mutex_t mountain_b_to_mountain_a;
+pthread_mutex_t mountain_a_to_mountain_b;
 
-int process = 0;
+int mountainA = 0;
+int mountainB = 0;
 
 
 void* mountain_a(void* arg);
@@ -32,37 +33,50 @@ void crossing_rope_a();
 void arriving_mountain_b();
 void crossing_rope_b();
 void arriving_mountain_a();
-void crossing_portal_b();
-void crossing_portal_a();
+//void crossing_portal_b();
+//void crossing_portal_a();
 
 
 int main()
 {
-    pthread_mutex_init (&mountain_b__mountain_a, NULL);
-    pthread_mutex_init (&mountain_a__mountain_b, NULL);
+    pthread_mutex_init (&mountain_b_to_mountain_a, NULL);
+    pthread_mutex_init (&mountain_a_to_mountain_b, NULL);
     pthread_mutex_init (&turn, NULL);
-    pthread_mutex_init (&db, NULL);
+    pthread_mutex_init (&entry, NULL);
 
-    pthread_t a[MONKEY_A], b[MONKEY_B];
+    pthread_t monkey[MONKEY_A + MONKEY_B];
 
     int i;
     int * id;
 
-    for(i = 0; i < MONKEY_A; i++)
+    for(i = 0; i < MONKEY_A + MONKEY_B; i++)
     {
         id = (int *) malloc(sizeof(int));
         *id = i;
-        pthread_create(&a[i], NULL, mountain_a, (void *) (id));
+
+        
+        if (i%2 == 0) {
+            
+            if ( pthread_create(&monkey[i], NULL, mountain_a, (void *) (id))) {
+                return -1;
+            }
+        }
+        else if ( pthread_create(&monkey[i], NULL, mountain_b, (void *) (id)))
+        {
+            return -1;
+        }
+        id++;
     }
     
-    for(i = 0; i < MONKEY_B; i++)
-    {
-        id = (int *) malloc(sizeof(int));
-        *id = i;
-        pthread_create(&b[i], NULL, mountain_b, (void *) (id));
-    }
 
-    pthread_join(a[0],NULL);
+    
+    for(i = 0; i < MONKEY_A + MONKEY_B; i++)
+    {  
+        if (pthread_join(monkey[i], NULL)) {
+            return -1;
+        }
+    }
+    
     return 0;
 
 }
@@ -73,26 +87,25 @@ void* mountain_a(void* arg){
     while(TRUE){
         
         pthread_mutex_lock(&turn);
-        pthread_mutex_lock(&mountain_a__mountain_b);
+        pthread_mutex_lock(&mountain_a_to_mountain_b);
         
-        process = process + 1;
+        mountainA = mountainA + 1;
 
-        if(process == 1)
-            pthread_mutex_lock(&db);
+        if(mountainA == 1)
+            pthread_mutex_lock(&entry);
 
+        pthread_mutex_unlock(&mountain_a_to_mountain_b);
         pthread_mutex_unlock(&turn);
-        pthread_mutex_unlock(&mountain_a__mountain_b);
-
         crossing_rope_a(i);
 
-        pthread_mutex_lock(&mountain_a__mountain_b);
+        pthread_mutex_lock(&mountain_a_to_mountain_b);
 
-        process = process - 1;
+        mountainA = mountainA - 1;
 
-        if(process == 0)
-            pthread_mutex_unlock(&db);
+        if(mountainA == 0)
+            pthread_mutex_unlock(&entry);
 
-        pthread_mutex_unlock(&mountain_a__mountain_b);
+        pthread_mutex_unlock(&mountain_a_to_mountain_b);
         arriving_mountain_b(i);
         //crossing_portal_b(i);       
     }
@@ -105,26 +118,25 @@ void* mountain_b(void* arg){
     while(TRUE){
         
         pthread_mutex_lock(&turn);
-        pthread_mutex_lock(&mountain_b__mountain_a);
+        pthread_mutex_lock(&mountain_b_to_mountain_a);
         
-        process = process + 1;
+        mountainB = mountainB + 1;
 
-        if(process == 1)
-            pthread_mutex_lock(&db);
+        if(mountainB == 1)
+            pthread_mutex_lock(&entry);
 
+        pthread_mutex_unlock(&mountain_b_to_mountain_a);
         pthread_mutex_unlock(&turn);
-        pthread_mutex_unlock(&mountain_b__mountain_a);
-
         crossing_rope_b(i);
 
-        pthread_mutex_lock(&mountain_b__mountain_a);
+        pthread_mutex_lock(&mountain_b_to_mountain_a);
 
-        process = process - 1;
+        mountainB = mountainB - 1;
 
-        if(process == 0)
-            pthread_mutex_unlock(&db);
+        if(mountainB == 0)
+            pthread_mutex_unlock(&entry);
 
-        pthread_mutex_unlock(&mountain_b__mountain_a);
+        pthread_mutex_unlock(&mountain_b_to_mountain_a);
         arriving_mountain_a(i);
         //crossing_portal_a(i);      
     }
@@ -133,30 +145,30 @@ void* mountain_b(void* arg){
 
 void crossing_rope_a(int i){
     printf("Monkey %d from mountain A is crossing the rope to mountain B. \n", i);
-    sleep(rand()%3);
+    sleep(rand()%5);
 }
 
 void crossing_rope_b(int i){
     printf("Monkey %d from mountain B is crossing the rope to mountain A. \n", i);
-    sleep(rand()%3);
+    sleep(rand()%5);
 }
 
 void arriving_mountain_a(int i){
     printf("Monkey %d from mountain B arrived at mountain A. \n", i);
-    sleep(rand()%3);
+    sleep(rand()%5);
 }
 
 void arriving_mountain_b(int i){
     printf("Monkey %d from mountain A arrived at mountain B. \n", i);
-    sleep(rand()%3);
+    sleep(rand()%5);
 }
 
 void crossing_portal_a(int i){
     printf("Monkey %d from mountain A is crossing the portal back to mountain A. \n", i);
-    sleep(rand()%3);
+    sleep(rand()%5);
 }
 
 void crossing_portal_b(int i){
     printf("Monkey %d from mountain B is crossing the portal back to mountain B. \n", i);
-    sleep(rand()%3);
+    sleep(rand()%5);
 }
