@@ -23,12 +23,12 @@ int main() {
 	pthread_t p;
 
 	int i;
-        int *id;
-        pthread_create(&p, NULL, pombo, NULL);    
-    	for (i = 0; i < NU ; i++) {
-          id = (int *) malloc(sizeof(int));
-          *id = i;
-	  pthread_create(&r[i], NULL, usuario,  (void *) (id));
+    int *id;
+    pthread_create(&p, NULL, pombo, NULL);    
+    for (i = 0; i < NU ; i++) {
+      	id = (int *) malloc(sizeof(int));
+      	*id = i;
+		pthread_create(&r[i], NULL, usuario,  (void *) (id));
 	}
 
 	
@@ -42,21 +42,19 @@ void* usuario(void *a) {
 	int i = *((int *) a);
 //        printf("usuario\n");
 	while(TRUE) {
-                 printf("Usuário %d vai escrever uma carta.\n",i);               
-		 sleep(5);
-                 pthread_mutex_lock(&mutex);
-                 while(contador == CARTAS){
-                        pthread_cond_wait(&usuario_cond,&mutex);
-                 }
-
-                 contador++;
-		 printf("Usuário %d colocou uma carta na mochila do pombo.\n",i);
-		 sleep(1);
-
-		 if (contador == CARTAS) {        
-		     pthread_cond_signal(&pombo_cond);   
-		 }
-                 pthread_mutex_unlock(&mutex);
+        printf("Usuário %d vai escrever uma carta.\n",i);               
+		sleep(5);
+        pthread_mutex_lock(&mutex);
+        while(contador == CARTAS){
+            pthread_cond_wait(&usuario_cond,&mutex);
+        }
+		contador++;
+		printf("Usuário %d colocou uma carta na mochila do pombo.\n",i);
+		sleep(1);
+		if (contador == CARTAS) {        
+			pthread_cond_signal(&pombo_cond);   
+		}
+        pthread_mutex_unlock(&mutex);
 		 
 	}
 }
@@ -64,18 +62,16 @@ void* usuario(void *a) {
 void* pombo(void *arg) {
 	
 	while(TRUE) {
-
-                 pthread_mutex_lock(&mutex);
+		pthread_mutex_lock(&mutex);
 		 //while(contador < CARTAS){
-			pthread_cond_wait(&pombo_cond,&mutex);
+		pthread_cond_wait(&pombo_cond,&mutex);
                  
                  //}
-
-	         printf("Pombo levando as cartas.\n");
-                 sleep(10);
-		 contador = 0;
-                 printf("Pombo voltou.\n");
-                 pthread_cond_broadcast(&usuario_cond);   
-		 pthread_mutex_unlock(&mutex);
+		printf("Pombo levando as cartas.\n");
+        sleep(10);
+		contador = 0;
+        printf("Pombo voltou.\n");
+        pthread_cond_broadcast(&usuario_cond);   
+		pthread_mutex_unlock(&mutex);
 	}
 }

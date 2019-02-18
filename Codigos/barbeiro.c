@@ -42,7 +42,7 @@ void* f_cliente(void* v) {
   } else {
     printf("Cliente %d não entrou na barbearia.\n", id);
   }
-  pthread_exit(0);;
+  pthread_exit(0);
 }
 
 int main() {
